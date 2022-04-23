@@ -1,0 +1,9 @@
+ 
+[masters]
+ master01 ansible_ssh_host=127.0.0.1 ansible_port=2301 ansible_user=vagrant  ansible_private_key_file=/home/prado/.ssh/insecure_private_key 
+ 
+[slaves]
+ slave11 ansible_ssh_host=127.0.0.1 ansible_port=2311 ansible_user=vagrant  ansible_private_key_file=/home/prado/.ssh/insecure_private_key 
+ slave12 ansible_ssh_host=127.0.0.1 ansible_port=2312 ansible_user=vagrant  ansible_private_key_file=/home/prado/.ssh/insecure_private_key 
+ slave13 ansible_ssh_host=127.0.0.1 ansible_port=2313 ansible_user=vagrant  ansible_private_key_file=/home/prado/.ssh/insecure_private_key 
+

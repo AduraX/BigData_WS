@@ -1,0 +1,12 @@
+---
+hdp_Bucket: adurax.hdpcluster
+hd_user: hduser
+hd_group: hdgroup
+hd_pass: hduser001
+proj_dir: /usr/local/bdplat
+data_dir: /var/bdData
+arch_dir: /vagrant/Archive
+java_dir: /usr/lib/jvm/java-8-openjdk-amd64/jre
+CS_SEEDS: 192.168.50.111,192.168.50.112
+KF_NODES: slave11:9011,slave12:9012,slave13:9013
+ZK_NODES: slave11:2181,slave12:2181,slave13:2181 

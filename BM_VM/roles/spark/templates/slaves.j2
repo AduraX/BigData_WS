@@ -1,0 +1,5 @@
+{% for host in nodes %}
+{%- if loop.index0 > 0 -%}
+{{ host['hostname'] }}
+{% endif %}
+{% endfor %}

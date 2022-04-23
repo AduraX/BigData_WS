@@ -1,0 +1,10 @@
+---  
+k8s_cluster_name: K8s_VAG_P
+k8s_master_admin_user: vagrant
+k8s_master_admin_group: vagrant
+k8s_node_admin_user: vagrant
+k8s_node_admin_group: vagrant
+
+k8s_master_node_name: master01
+k8s_node_public_ip: 192.168.70.101 #k8s_node_public_dns: 
+

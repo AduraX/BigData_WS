@@ -1,0 +1,14 @@
+ 
+[masters]
+ master01 ansible_ssh_host=127.0.0.1 ansible_port=2201 ansible_user=vagrant  ansible_private_key_file=~/.vagrant.d/insecure_private_key
+ 
+[slaves]
+ slave11 ansible_ssh_host=127.0.0.1 ansible_port=2211 ansible_user=vagrant  ansible_private_key_file=~/.vagrant.d/insecure_private_key
+ slave12 ansible_ssh_host=127.0.0.1 ansible_port=2212 ansible_user=vagrant  ansible_private_key_file=~/.vagrant.d/insecure_private_key
+ slave13 ansible_ssh_host=127.0.0.1 ansible_port=2213 ansible_user=vagrant  ansible_private_key_file=~/.vagrant.d/insecure_private_key
+  
+[zookeeps]
+ slave11 ansible_ssh_host=127.0.0.1 ansible_port=2211 ansible_user=vagrant ansible_private_key_file=~/.vagrant.d/insecure_private_key
+ slave12 ansible_ssh_host=127.0.0.1 ansible_port=2212 ansible_user=vagrant ansible_private_key_file=~/.vagrant.d/insecure_private_key
+ slave13 ansible_ssh_host=127.0.0.1 ansible_port=2213 ansible_user=vagrant ansible_private_key_file=~/.vagrant.d/insecure_private_key
+

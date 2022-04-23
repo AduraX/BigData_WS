@@ -1,0 +1,12 @@
+---
+- name: Install on master node(s)
+  hosts: masters
+  become: yes
+  roles:
+    - k8s/master
+
+- name: Install on slave nodes
+  hosts: slaves
+  become: yes
+  roles:
+    - k8s/node

@@ -1,0 +1,30 @@
+---
+nodes: 
+  - hostname: master01
+    dns: 127.0.0.1
+    ip: 192.168.50.101
+    bkid: 01
+    kfPort: 9001
+    esPort: 9201
+    isMaster: true  
+  - hostname: slave11
+    dns: 127.0.0.1
+    ip: 192.168.50.111
+    bkid: 11
+    kfPort: 9011
+    esPort: 9211
+    isMaster: false  
+  - hostname: slave12
+    dns: 127.0.0.1
+    ip: 192.168.50.112
+    bkid: 12
+    kfPort: 9012
+    esPort: 9212
+    isMaster: false  
+  - hostname: slave13
+    dns: 127.0.0.1
+    ip: 192.168.50.113
+    bkid: 13
+    kfPort: 9013
+    esPort: 9213
+    isMaster: false 

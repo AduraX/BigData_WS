@@ -1,0 +1,6 @@
+
+k8s_master_node_name: "{{ k8s_cluster_name }}" #"k8sMast"
+k8s_cluster_name:     "{{ k8s_cluster_name }}-cluster"
+
+k8s_master_apiserver_advertise_address: "{{ k8s_node_public_ip }}"
+k8s_master_pod_network_cidr: "192.168.112.0/20"

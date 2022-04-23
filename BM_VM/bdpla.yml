@@ -1,0 +1,77 @@
+---
+
+- name: Install common all nodes
+  hosts: master01 # all
+  vars_files:
+    - nodes.yaml
+  remote_user: hduser
+  become: yes
+  tasks:
+    - name: Print version
+      debug:
+        msg: "List the nodes: {% for host in nodes|reverse %} {{ host['hostname'] }} {% endfor %}"  
+
+
+# #=== Main Function Starts Here ===
+# nodeUser=hduser
+# nodes=(slave13a slave12a slave11a master01a)
+# for node in "${nodes[@]}" ; do
+#   if [[ "$node" != "${HOSTNAME,,}" ]]; then
+#     echo -e "\n======= Sshing into Node: $node ======="
+#     serviceStatus $node zookeeper
+#     serviceStatus $node kafka
+#     serviceStatus $node cassandra
+#     echo -e "\n"
+#   fi
+# done
+
+# "List the nodes: {% for host in nodes %} {{ host['hostname'] }} {% endfor %} | step:  {% for i in range(1, 10)|reverse %} {{i}} {% endfor %}"  
+# "List the nodes: {{nodes[*].hostname}}"  # nodes[0]['hostname']
+# {% for host in nodes %} {{ host['hostname'] }} {% endfor %}
+# "{% for host in nodes %} {%- if host['hostname'] == inventory_hostname -%} {{loop.index0}} {% endif %} {% endfor %}"
+# # Example that prints the loopback address and gateway for each host
+# - debug:
+
+
+#     msg: "List the nodes: {{ nodes }}" # ['hostname']
+
+
+# - name: Install on slave nodes
+#   hosts: slaves
+#   vars_files:
+#     - nodes.yaml
+#   remote_user: hduser
+#   become: yes
+#   roles:
+#     - spark
+
+# - name: Install on master node(s)
+#   hosts: masters
+#   vars_files:
+#     - nodes.yaml
+#   remote_user: hduser
+#   become: yes
+#   roles:
+#     - spark
+
+
+# - name: Install common all nodes
+#   hosts: all
+#   remote_user: hduser
+#   become: yes
+#   tasks:
+#     - name: Print version
+#       debug:
+#         msg: "{{inventory_hostname}}"
+
+#-------------- Imporatnt --------------------
+# Run elasticsearch:   elasticsearch/bin/elasticsearch -d # re-run if you shutdown your computer
+# Run a query to test - it will error but should return json:  curl 'localhost:9200/agile_data_science/on_time_performance/_search?q=Origin:ATL&pretty'
+# sudo service mongod start
+# - name: Print version
+#   debug:
+#     msg: "{{inventory_hostname}} Host Index: {{host_index}}"
+
+
+
+# export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -i AnsibleInventory bdpla.yml

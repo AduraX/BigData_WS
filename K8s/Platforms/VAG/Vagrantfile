@@ -1,0 +1,43 @@
+# -*- mode: ruby -*- \n# vi: set ft=ruby :
+
+MASTERS_NUM=1
+SLAVES_NUM=3
+MASTERS_MEM=2048
+SLAVES_MEM=2048
+MASTERS_CPU=2
+SLAVES_CPU=2
+IP_BASE='192.168.70'
+SSH_PORT=23
+
+VAGRANT_DISABLE_VBOXSYMLINKCREATE=1
+IMAGE_NAME = "bento/ubuntu-20.04"
+
+Vagrant.configure("2") do |config|
+    config.ssh.insert_key = false
+
+    (1..MASTERS_NUM).each do |i|
+        config.vm.define "K8s-Master0#{i}" do |master|
+            master.vm.box = IMAGE_NAME
+            master.vm.network "private_network", ip: "#{IP_BASE}.10#{i}"
+        		master.vm.network :forwarded_port, guest: 22, host: "#{SSH_PORT}0#{i}".to_i(), id: "ssh"
+            master.vm.hostname = "K8s-Master0#{i}"
+            master.vm.provider "virtualbox" do |v|
+                v.memory = MASTERS_MEM
+                v.cpus = MASTERS_CPU
+            end
+        end
+    end
+
+    (1..SLAVES_NUM).each do |j|
+        config.vm.define "K8s-Slave#{10 + j}" do |slave|
+            slave.vm.box = IMAGE_NAME
+            slave.vm.network "private_network", ip: "#{IP_BASE}.1#{10 + j}"
+        		slave.vm.network "forwarded_port", guest: 22, host: "#{SSH_PORT}#{10 + j}".to_i(), id: "ssh"
+            slave.vm.hostname = "K8s-Slave#{10 + j}"
+            slave.vm.provider "virtualbox" do |v|
+                v.memory = SLAVES_MEM
+                v.cpus = SLAVES_CPU
+            end
+        end
+    end
+end
