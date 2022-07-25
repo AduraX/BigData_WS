@@ -40,7 +40,7 @@
       - spark-env.sh
       - spark-defaults.conf
       - log4j.properties
-      - slaves
+      - workers
   - name: template configuration
     template:
       src: "{{ item }}.j2"
@@ -49,12 +49,7 @@
       group: "{{ spark_group }}"
       mode: "0744"
     loop:
-      - check-status.sh
-  - stat: path={{proj_dir}}/spark/conf/workers.template
-    register: workers_file
-  - name: Rename slaves to workers if Spark version 3
-    command: mv {{proj_dir}}/spark/conf/slaves {{proj_dir}}/spark/conf/workers
-    when: workers_file.stat.exists
+      - check-status.sh  
   - name: ensure local & worker dirs exist
     file:
       dest: "{{ item }}"

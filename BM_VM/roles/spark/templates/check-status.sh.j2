@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # chmod +x $SPARK_HOME/bin/check-status.sh && $SPARK_HOME/bin/check-status.sh
-# kafka-topics.sh --create --topic top345 --replication-factor 3  --partitions 5  --zookeeper $ZK_NODES
 
 serviceStatus() { # para: $node $service
   outq=$(ssh -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $nodeUser@$1 "systemctl status $2 2>&1")
@@ -36,6 +35,15 @@ masterStatus() { # para: $service
 
 #=== Main Function Starts Here ===
 nodeUser=hduser
+echo -e "\n======= Sshing into localhost: ${HOSTNAME,,} ======="
+#masterStatus spark
+echo -e "\nStarting Spark on all the nodes [master and a number of slaves] ..."
+{{proj_dir}}/spark/sbin/start-master.sh # start-all.sh
+echo -e "\n******listing of all running demons on ${HOSTNAME,,} ..."
+jps 
+
+{{proj_dir}}/spark/sbin/start-workers.sh spark://{{ nodes[0]['hostname'] }}:7077
+
 nodes=({% for host in nodes|reverse %} {{ host['hostname'] }} {% endfor %}) 
 for node in "${nodes[@]}" ; do
   if [[ "$node" != "${HOSTNAME,,}" ]]; then
@@ -43,11 +51,10 @@ for node in "${nodes[@]}" ; do
     serviceStatus $node zookeeper
     serviceStatus $node kafka
     serviceStatus $node cassandra
+    #ssh hduser@$node {{proj_dir}}/spark/sbin/start-worker.sh spark://{{ nodes[0]['ip'] }}:7077
+    echo -e "\n******listing of all running demons on $node ..."
+    ssh hduser@$node jps
     echo -e "\n"
   fi
 done
-
-echo -e "\n======= Sshing into localhost: ${HOSTNAME,,} ======="
-masterStatus spark
-
 ssh -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $nodeUser@${nodes[0]} {{proj_dir}}/kafka/bin/testRunKF

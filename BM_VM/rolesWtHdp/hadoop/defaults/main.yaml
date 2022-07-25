@@ -1,0 +1,8 @@
+---
+hadoop_user: "{{hd_user}}"
+hadoop_group: "{{hd_group}}"
+
+hadoop_namenode_dir: "{{data_dir}}/hadoop/namenode"
+hadoop_datanode_dir: "{{data_dir}}/hadoop/datanode"
+hadoop_tmp_dir: "{{data_dir}}/hadoop/tmp"
+

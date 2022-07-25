@@ -1,0 +1,76 @@
+---
+- stat: path={{proj_dir}}/hadoop/conf/hadoop-env.sh  
+  register: hadoop_folder
+- name: hadoop environment setup
+  block:
+  - name: create hadoop lib dir
+    file: path="{{ proj_dir }}/hadoop" state=directory recurse=yes owner={{hadoop_user}} group={{hadoop_group}} mode=0755
+  - name: untar hadoop
+    unarchive:
+      src: "{{arch_dir}}/hadoop.tar.gz"
+      dest: "{{ proj_dir }}/hadoop"
+      extra_opts: --strip-components=1
+      remote_src: yes
+      owner: "{{ hadoop_user }}"
+      group: "{{ hadoop_group }}"
+      mode: "0755"
+  - name: template configuration
+    template:
+      src: "{{ item }}.j2"
+      dest: "{{ proj_dir }}/hadoop/etc/hadoop/{{ item }}"
+      backup: yes
+      owner: "{{ hadoop_user }}"
+      group: "{{ hadoop_group }}"
+      mode: "0644"
+    loop:
+      - core-site.xml
+      - hdfs-site.xml
+      - yarn-site.xml
+      - mapred-site.xml
+      - masters
+      - workers
+
+  - name: ensure needed dirs exist
+    file:
+      dest: "{{ item }}"
+      state: directory
+      owner: "{{ hadoop_user }}"
+      group: "{{ hadoop_group }}"
+      recurse: yes
+      mode: "0755"
+    loop:
+      - "{{ hadoop_namenode_dir }}"
+      - "{{ hadoop_datanode_dir }}"
+      - "{{ hadoop_tmp_dir }}"
+
+  - name: Add JAVA_HOME to hadoop-env.sh 
+    lineinfile: dest={{proj_dir}}/hadoop/etc/hadoop/hadoop-env.sh line="export JAVA_HOME={{java_dir}}"
+  - name: Adding hadoop home dir to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export HADOOP_HOME={{proj_dir}}/hadoop"
+  - name: Adding hadoop bin dir to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export PATH=$PATH:{{proj_dir}}/hadoop/bin"
+  - name: Adding hadoop sbin dir to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export PATH=$PATH:{{proj_dir}}/hadoop/sbin"
+  - name: Adding HADOOP_CONF_DIR to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export HADOOP_CONF_DIR={{proj_dir}}/hadoop/etc/hadoop"
+  - name: Adding LD_LIBRARY_PATH to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export LD_LIBRARY_PATH={{proj_dir}}/hadoop/lib/native:$LD_LIBRARY_PATH"
+  - name: Adding hadoop home dir to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export SPARK_DIST_CLASSPATH='{{proj_dir}}/hadoop/bin/hadoop classpath'"
+  - name: Adding HADOOP_MAPRED_HOME to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export HADOOP_MAPRED_HOME={{proj_dir}}/hadoop"
+  - name: Adding HADOOP_COMMON_HOME to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export HADOOP_COMMON_HOME={{proj_dir}}/hadoop"
+  - name: Adding HADOOP_HDFS_HOME to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export HADOOP_HDFS_HOME={{proj_dir}}/hadoop"
+  - name: Adding YARN_HOME to bashrc
+    lineinfile: dest=/home/{{hadoop_user}}/.bashrc line="export YARN_HOME={{proj_dir}}/hadoop"
+
+  - name: ensure all unzip dirs has correct permissions
+    file:
+      dest: "{{ proj_dir }}/hadoop"
+      state: directory
+      owner: "{{ hadoop_user }}"
+      group: "{{ hadoop_group }}"
+      recurse: yes
+  when: not hadoop_folder.stat.exists

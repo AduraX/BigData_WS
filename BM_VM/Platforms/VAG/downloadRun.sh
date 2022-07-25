@@ -3,13 +3,14 @@
 
 ARCH_DIR=Platforms/VAG/Archive
 # library Versions
-sparVer="3.1.2"
-scalVer="2.12.13"
-cassVer="3.11.11"
+sparVer="3.2.2"
+scalVer="2.12.16"
 kafkVer="2.8.1"
-zooVer="3.6.3"
-elasVer="7.6.2" #  7.12.1
-janusVer="0.5.3"
+zooVer="3.7.1" 
+cassVer="3.11.13"
+elasVer="7.14.2" 
+janusVer="0.6.2"
+
 
 downloadLibs(){
   echo -e "\nDownloading Spark ... 224.4mb"
@@ -32,8 +33,6 @@ downloadLibs(){
 
   echo -e "\nDownloading Janusgraph ... 12.5mb"
   curl -Lko $ARCH_DIR/Janusgraph.tar.gz "http://apache.mirror.digitalpacific.com.au/zookeeper/zookeeper-$zooVer/apache-zookeeper-$zooVer-bin.tar.gz"
-
-  # https://dist.apache.org/repos/dist/dev/incubator/toree/0.5.0-incubating-rc2/toree/toree-0.5.0-incubating-bin.tar.gz
 }
 
 echo -e '\nChecking for folder existence ...'
@@ -46,3 +45,4 @@ else
   echo -e "downloading libraries ..."
   downloadLibs
 fi
+

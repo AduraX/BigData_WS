@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# chmod +x $SPARK_HOME/bin/check-status.sh && $SPARK_HOME/bin/check-status.sh
+# kafka-topics.sh --create --topic top345 --replication-factor 3  --partitions 5  --zookeeper $ZK_NODES
+
+serviceStatus() { # para: $node $service
+  outq=$(ssh -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $nodeUser@$1 "systemctl status $2 2>&1")
+  if grep -q 'could not be found' <<< "$outq"; then
+    echo -e "\nSorry! $2 service DOES NOT exist on node: $1 ...\nExiting ...\n"; return 0
+  elif grep -q 'active (running)' <<< "$outq"; then
+    echo -e "\n$2 service running on node: $1 ..."
+  else
+    echo -e "\nRestarting $2 service on node: $1 ..."
+    ssh -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $nodeUser@$1 'systemctl restart $2 > /dev/null'
+  fi
+
+  sleep 1
+  outp=$(ssh -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $nodeUser@$1 "ps -ef | grep $2 | grep -v grep | awk '{print \$2}'  ORS=' '")
+  [ -z "$outp" ] && echo -e "Sorry! $2 NOT running on $1 node ..." || echo -e "Good! $2 running on $1 node with PID[$outp] ..."
+}
+
+masterStatus() { # para: $service
+  outq=$(sudo systemctl status $1 2>&1)
+  if grep -q 'could not be found' <<< "$outq"; then
+    echo -e "\nSorry! $1 service DOES NOT exist on localhost: ${HOSTNAME,,} ...\nExiting ...\n"; return 0
+  elif grep -q 'active (running)' <<< "$outq"; then
+    echo -e "\n$1 service running on localhost: ${HOSTNAME,,} ..."
+  else
+    echo -e "\nRestarting $1 service on localhost: ${HOSTNAME,,} ..."
+    sudo systemctl restart $1 > /dev/null
+  fi
+
+  sleep 1
+  outp=$(ps -ef | grep $1 | grep -v grep | awk '{print $2}' ORS=' ')
+  [ -z "$outp" ] && echo -e "Sorry! $1 NOT running on localhost: $HOSTNAME ..." || echo -e "Good! $1 running on localhost: $HOSTNAME with PID: $outp ..."
+}
+
+#=== Main Function Starts Here ===
+StartStop=${1:-Start}
+if [ ${StartStop^^} = "START" ]; then
+  nodeUser=hduser
+  #[** Starting the serviceStatus
+  nodes=({% for host in nodes|reverse %} {{ host['hostname'] }} {% endfor %}) 
+  for node in "${nodes[@]}" ; do
+    if [[ "$node" != "${HOSTNAME,,}" ]]; then
+      echo -e "\n======= Sshing into Node: $node ======="
+      serviceStatus $node zookeeper
+      serviceStatus $node kafka
+      serviceStatus $node cassandra
+      echo -e "******listing of all running demons ..."
+      jps
+      echo -e "\n"
+    fi
+  done
+  ssh -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $nodeUser@${nodes[0]} {{proj_dir}}/kafka/bin/testRunKF
+
+  echo -e "\n======= Sshing into localhost: ${HOSTNAME,,} ======="
+  #masterStatus spark
+
+  #echo -e "\n\nFormatting HDFS on master node ..."
+  #hdfs namenode -format
+
+  # start-dfs.sh will start NameNode, ResourceManager and SecondaryNameNode on master node, and
+  # DataNode and NodeManager on slave nodes, according to the configuration in the workers[slaves] config file
+  #echo -e "\nStarting HDFS & Yarn on all the nodes ..."
+  #start-dfs.sh 
+  #start-yarn.sh
+
+  echo -e "\nStarting Spark on all the nodes [master and a number of slaves] ..."
+  {{proj_dir}}/spark/sbin/start-all.sh
+  
+  echo -e "\nlisting of all running demons on master node only ..."
+  jps # Jps NameNode SecondaryNameNode DataNode;  NodeManager ResourceManager
+
+elif [ ${StartStop^^} = "STOP" ]; then
+  #[** Stopping service deamons
+  echo -e "\nStopping HDFS & Yarn on all the nodes ..."
+  stop-dfs.sh && stopt-yarn.sh
+  # rm -rf $HADOOP_HOME/hdfs/datanode/current # if datanode refuses to launch
+
+  echo -e "\nStopping Spark on all the nodes ..."
+  {{proj_dir}}/spark/sbin/stop-all.sh
+  #**] Stopping service deamons
+else
+  echo -e '\nWrong argument!\nArgument can either be "start" or "stop" ...'
+fi

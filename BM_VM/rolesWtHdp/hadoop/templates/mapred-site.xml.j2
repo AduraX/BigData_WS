@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+  <property>
+    <name>mapreduce.jobtracker.address</name>
+    <value>{{nodes[0]['hostname']}}:54311</value>
+    <description>The host and port that the MapReduce job tracker runs
+    at.  If "local", then jobs are run in-process as a single map
+    and reduce task.
+    </description>
+  </property>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+
+<property>
+	<name>yarn.app.mapreduce.am.resource.mb</name>
+	<value>512</value>
+</property>
+<property>
+	<name>mapreduce.map.memory.mb</name>
+	<value>256</value>
+</property>
+<property>
+	<name>mapreduce.reduce.memory.mb</name>
+	<value>256</value>
+</property>
+<property>
+	<name>yarn.app.mapreduce.am.env</name>
+	<value>HADOOP_MAPRED_HOME={{proj_dir}}/hadoop</value>
+</property>
+<property>
+	<name>mapreduce.map.env</name>
+	<value>HADOOP_MAPRED_HOME={{proj_dir}}/hadoop</value>
+</property>
+<property>
+	<name>mapreduce.reduce.env</name>
+	<value>HADOOP_MAPRED_HOME={{proj_dir}}/hadoop</value>
+</property>
+</configuration>

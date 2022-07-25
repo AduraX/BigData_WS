@@ -40,7 +40,6 @@
       - spark-env.sh
       - spark-defaults.conf
       - log4j.properties
-      - slaves
   - name: template configuration
     template:
       src: "{{ item }}.j2"
@@ -50,11 +49,6 @@
       mode: "0744"
     loop:
       - check-status.sh
-  - stat: path={{proj_dir}}/spark/conf/workers.template
-    register: workers_file
-  - name: Rename slaves to workers if Spark version 3
-    command: mv {{proj_dir}}/spark/conf/slaves {{proj_dir}}/spark/conf/workers
-    when: workers_file.stat.exists
   - name: ensure local & worker dirs exist
     file:
       dest: "{{ item }}"
@@ -87,19 +81,14 @@
     host_index: "{% for host in nodes %} {%- if host['hostname'] == inventory_hostname -%} {{loop.index0}} {% endif %} {% endfor %}"
 - name: Stop & Restart Spark
   block:
-  - name: Install spark service
+  - name: template configuration
     template:
-      src:  spark.service.j2
-      dest: /etc/systemd/system/spark.service
+      src: "{{ item }}.j2"
+      dest: "{{ proj_dir }}/spark/conf/{{ item }}"
+      backup: yes
       owner: "{{ spark_user }}"
       group: "{{ spark_group }}"
       mode: "0644"
-  - name: stop spark service
-    systemd:
-      name: spark
-      state: stopped
-  - name: Ensure spark is running by starting spark service
-    systemd:
-      name: spark
-      state: started
+    loop:
+      - workers
   when: "nodes[host_index|int]['isMaster']|bool"

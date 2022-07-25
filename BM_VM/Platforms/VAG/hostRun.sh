@@ -64,7 +64,7 @@ if [ $isBastion == "Y" ]; then
   Host_Dns="127.0.0.1"
   Host_Port=2200
   LogDns=$Host_Dns
-  $ECHO "\nHost LogHost  \n\tHostName $Host_Dns  \n\tUser $HD_USER \n\tIdentityFile $PathToKey/id_rsa.pub \n\tProxyCommand none" >> $PathToKey/config
+  $ECHO "\nHost LogHost  \n\tHostName $Host_Dns  \n\tUser $HD_USER \n\tPort $Host_Port \n\tIdentityFile $PathToKey/id_rsa.pub \n\tProxyCommand none" >> $PathToKey/config
   $ECHO "bastion$lbAZ" >> VagNodes
   sshCmd="ssh BastionA -W %h:%p"
 
@@ -83,7 +83,7 @@ for ((i=1; i<=NumMasters; i++)); do
   Host_Port="220$i"
   if [ $isBastion == "N" ] && [ $i -eq 1 ]; then
     LogDns=$Host_Dns
-    $ECHO "\nHost LogHost  \n\tHostName $Host_Dns  \n\tUser $HD_USER \n\tIdentityFile $PathToKey/id_rsa.pub \n\tProxyCommand none" >> $PathToKey/config
+    $ECHO "\nHost LogHost  \n\tHostName $Host_Dns  \n\tUser $HD_USER \n\tPort $Host_Port \n\tIdentityFile $PathToKey/id_rsa.pub \n\tProxyCommand none" >> $PathToKey/config
   fi
   $ECHO "Master$Psn${lbAZ}" >> VagNodes
   #$ECHO "\nHost Master$Psn${lbAZ}  \n\tHostName $Host_Dns  \n\tUser $HD_USER \n\tIdentityFile $PathToKey/id_rsa.pub \n\tProxyCommand $sshCmd" >> $PathToKey/config
@@ -158,7 +158,7 @@ CS_SEEDS: ${lbCS_SEEDS:1}
 KF_NODES: ${lbKF_NODES:1}
 ZK_NODES: ${lbZK_NODES:1} """ > ../../group_vars/all.yml
 
-$ECHO """127.0.0.1 localhost {{nodes[host_index|int]['hostname']}}
+$ECHO """#127.0.0.1 localhost {{nodes[host_index|int]['hostname']}}
 $lbHosts
 # The following lines are desirable for IPv6 capable hosts
 ::1 ip6-localhost ip6-loopback

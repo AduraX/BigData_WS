@@ -1,2 +1,6 @@
 
 **/Archive
+**/.vagrant
+**/.private
+*-join-command
+*.log

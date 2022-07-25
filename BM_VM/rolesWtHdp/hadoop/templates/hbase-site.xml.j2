@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+   <property>
+     <name>hbase.cluster.distributed</name>
+     <value>true</value>
+     <description>The mode the cluster will be in. Possible values are
+       false: standalone and pseudo-distributed setups with managed ZooKeeper
+       true: fully-distributed with unmanaged ZooKeeper Quorum (see hbase-env.sh)
+     </description>
+   </property>
+   <property>
+     <name>hbase.tmp.dir</name>
+     <value>{{proj_dir}}/tmp/hbase</value>
+     <description>Temporary directory on the local filesystem.</description>
+   </property>
+   <property>
+     <name>hbase.rootdir</name>
+     <value>hdfs://{{nodes[0]['hostname']}}:54310/hbase</value>
+     <description>The directory shared by RegionServers.</description>
+   </property>
+   <property>
+     <name>dfs.datanode.max.transfer.threads</name>
+     <value>4096</value>
+   </property>
+   <property>
+     <name>hbase.unsafe.stream.capability.enforce</name>
+     <value>false</value>
+  </property>
+
+   <property>
+     <name>hbase.zookeeper.quorum</name>
+     <value>{{ZK_NODES}}</value>
+     <description>The directory shared by RegionServers.</description>
+   </property>
+   <property>
+     <name>hbase.zookeeper.property.dataDir</name>
+     <value>{{proj_dir}}/tmp/zookeeper</value>
+     <description>Property from ZooKeeper's config zoo.cfg. The directory where the snapshot is stored. </description>
+  </property>
+</configuration>

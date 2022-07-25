@@ -31,6 +31,7 @@
     - openjdk-8-jdk-headless
     - whois
     - awscli
+    - python3-pip
 
 - name:  Install latest version of a list of packages for master nodes"
   apt:

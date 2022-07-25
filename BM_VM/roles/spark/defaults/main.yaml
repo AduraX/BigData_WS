@@ -2,18 +2,23 @@
 spark_user: "{{hd_user}}"
 spark_group: "{{hd_group}}"
 
-spark_master_host: "{{nodes[0]['hostname']}}" # "master01A" # "{{ hostvars[groups['masters'][0]] }}" # localhost
+spark_master_host: "{{nodes[0]['hostname']}}" # localhost
+spark_master_port: 7077 #700{{nodes[0]['bkid']}}
 spark_master_ip: "{{nodes[0]['ip']}}"
-spark_local_ip: "{{ ansible_hostname }}"
+spark_master_webui_port: 8080 #800{{nodes[0]['bkid']}}
+
+spark_local_ip: "{{nodes[host_index|int]['ip']}}" #ansible_default_ipv4.address|default(nodes[host_index|int]['ip'])}}"
 
 spark_worker_dir: "{{proj_dir}}/spark/work"
 spark_local_dirs: "{{data_dir}}/spark/tmp"
 spark_logs_dir: "{{data_dir}}/spark/logs"
 
-spark_openblas_num_threads: 1 # Disable multi-threading of OpenBLAS
-
+spark_worker_port: 70{{nodes[host_index|int]['bkid']}}
+spark_worker_webui_port: 80{{nodes[host_index|int]['bkid']}}
 spark_worker_cores: "{{ ansible_processor_vcpus }}"
-spark_worker_memory: 0.5G
+spark_worker_memory: 3g
 spark_worker_opts: "-Dspark.worker.cleanup.enabled=true"
+
+spark_openblas_num_threads: 1 # Disable multi-threading of OpenBLAS
 
 spark_Cass_ConnectJar: "com.datastax.spark:spark-cassandra-connector_2.12:3.1.0"

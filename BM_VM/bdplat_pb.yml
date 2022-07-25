@@ -16,8 +16,8 @@
   become: yes
   roles:
     - kafka
-    - cassandra
     - spark
+    #- cassandra
 
 - name: Install on master node(s)
   hosts: masters

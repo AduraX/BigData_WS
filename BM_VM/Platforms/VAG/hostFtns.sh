@@ -48,6 +48,12 @@ Vagrant.configure("2") do |config|
             master.vm.box = IMAGE_NAME
             master.vm.network "private_network", ip: "#{IP_BASE}.10#{i}"
         		master.vm.network :forwarded_port, guest: 22, host: "220#{i}".to_i(), id: "ssh"
+
+        		master.vm.network :forwarded_port, guest: 7077, host: 7077, auto_correct: true # spark_master_port
+        		master.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct: true # spark_master_webui_port
+        		master.vm.network :forwarded_port, guest: 4040, host: 4040, auto_correct: true # Spark driver UI
+        		master.vm.network :forwarded_port, guest: 4041, host: 4041, auto_correct: true # Spark driver UI for the 2nd application (e.g. a command-line job)
+
             master.vm.hostname = "Master0#{i}"
             master.vm.provider "virtualbox" do |v|
                 v.memory = MASTERS_MEM
@@ -61,6 +67,8 @@ Vagrant.configure("2") do |config|
             slave.vm.box = IMAGE_NAME
             slave.vm.network "private_network", ip: "#{IP_BASE}.1#{10 + j}"
         		slave.vm.network "forwarded_port", guest: 22, host: "22#{10 + j}".to_i(), id: "ssh"
+        		slave.vm.network :forwarded_port, guest: 7011, host: 7011, auto_correct: true # spark_worker_port
+        		slave.vm.network :forwarded_port, guest: 8011, host: 8011, auto_correct: true # spark_worker_webui_port
             slave.vm.hostname = "Slave#{10 + j}"
             slave.vm.provider "virtualbox" do |v|
                 v.memory = SLAVES_MEM
